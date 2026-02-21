@@ -1,18 +1,19 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.devtools.ksp)        // KSP — procesa anotaciones de Hilt
+    alias(libs.plugins.hilt.android)        // Hilt
 }
 
 android {
     namespace = "com.deyvieat.store"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.deyvieat.store"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -28,13 +29,23 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     buildFeatures {
         compose = true
     }
+
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+
+ksp {
+    arg("hilt.disableModulesHaveInstallInCheck", "true")
 }
 
 dependencies {
@@ -46,6 +57,18 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.icons.extended)   // Iconos extra
+
+    implementation(libs.androidx.lifecycle.viewmodel.compose)       // viewModel()
+    implementation(libs.com.squareup.retrofit2.retrofit)            // Retrofit
+    implementation(libs.com.squareup.retrofit2.converter.gson)      // Gson
+    implementation(libs.io.coil.kt.coil.compose)                    // Coil (imágenes)
+
+    implementation(libs.hilt.android)                               // Hilt — librería principal
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.play.services.analytics.impl)                    // hiltViewModel() en Compose
+    ksp(libs.hilt.compiler)                                         // KSP — generador de código Hilt
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -53,9 +76,5 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-    implementation(libs.coil.compose)
-    implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 }
